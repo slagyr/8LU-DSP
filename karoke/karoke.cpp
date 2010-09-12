@@ -194,8 +194,8 @@ OSStatus karoke::ProcessBufferLists	(AudioUnitRenderActionFlags&	iFlags,
 	
 	while (iFrames > 0) {
 		
-		*leftOut = *leftSample; 
-		*rightOut = *rightSample; 
+		*leftOut = *leftSample - *rightSample; 
+		*rightOut = *rightSample - *leftSample; 
 		
 		iFrames--;
 		leftSample++;

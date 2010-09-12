@@ -54,7 +54,7 @@
 #define COMP_MANUF		karoke_COMP_MANF	
 
 #define VERSION			kkarokeVersion
-#define NAME			"8th Light: karoke"
+#define NAME			"Micah: karoke"
 #define DESCRIPTION		"karoke AU"
 #define ENTRY_POINT		"karokeEntry"
 
