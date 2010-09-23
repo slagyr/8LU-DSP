@@ -41,6 +41,7 @@
 */
 #include "AUEffectBase.h"
 #include "karokeVersion.h"
+#include "FirFilter.h"
 
 #if AU_DEBUG_DISPATCHER
 	#include "AUDebugDispatcher.h"
@@ -56,7 +57,7 @@
 // parameters
 static const float kDefaultValue_ParamOne = 0.5;
 
-static CFStringRef kParameterOneName = CFSTR("Parameter One");
+static CFStringRef kParameterOneName = CFSTR("Base Gain");
 
 enum {
 	kParam_One =0,
@@ -70,7 +71,7 @@ class karoke : public AUEffectBase
 public:
 	karoke(AudioUnit component);
 #if AU_DEBUG_DISPATCHER
-	virtual ~karoke () { delete mDebugDispatcher; }
+	virtual ~karoke () { delete mDebugDispatcher; delete mLeftFilter; delete mRightFilter; }
 #endif
 		
 	virtual	OSStatus			GetParameterValueStrings(AudioUnitScope			inScope,
@@ -104,7 +105,10 @@ public:
 										 AudioBufferList&	outBufferList, 
 										 UInt32			iFrames);
 	
-
+private:
+	FirFilter *mLeftFilter;
+	FirFilter *mRightFilter;
+	
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

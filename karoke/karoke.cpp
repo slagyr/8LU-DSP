@@ -44,6 +44,9 @@
 	
 =============================================================================*/
 #include "karoke.h"
+#include "low_pass_filter.h"
+#include "FirFilter.h"
+
 
 #define NUM_INPUTS 2
 #define NUM_OUTPUTS 2
@@ -78,6 +81,10 @@ karoke::karoke(AudioUnit component)
 	mDebugDispatcher = new AUDebugDispatcher (this);
 #endif
 	
+	mLeftFilter = new FirFilter(200);
+	mLeftFilter->setCoeffecients(lp_200, 200);
+	mRightFilter = new FirFilter(200);
+	mRightFilter->setCoeffecients(lp_200, 200);
 }
 
 UInt32 karoke::SupportedNumChannels (const AUChannelInfo** outInfo)
@@ -190,12 +197,16 @@ OSStatus karoke::ProcessBufferLists	(AudioUnitRenderActionFlags&	iFlags,
 	float *rightSample = ((float*)inBufferList.mBuffers[1].mData);
 	float *leftOut = (float*)outBufferList.mBuffers[0].mData;
 	float *rightOut = (float*)outBufferList.mBuffers[1].mData;
-
+	
+	float baseGain = GetParameter(kParam_One);
 	
 	while (iFrames > 0) {
 		
-		*leftOut = *leftSample - *rightSample; 
-		*rightOut = *rightSample - *leftSample; 
+		float leftBase = mLeftFilter->process(*leftSample) * baseGain;
+		float rightBase = mRightFilter->process(*rightSample) * baseGain;
+		
+		*leftOut = *leftSample + leftBase - *rightSample; 
+		*rightOut = *rightSample + rightBase - *leftSample; 
 		
 		iFrames--;
 		leftSample++;
